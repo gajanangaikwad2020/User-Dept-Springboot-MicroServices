@@ -1,0 +1,57 @@
+#server:
+#  port: 9091
+  
+   
+#spring:
+#  application:
+#    name: Api-Gateway
+
+   
+#application name and routing   
+#eureka:   
+#  client:
+#    register-with-eureka: false
+#    fetch-registry: false
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
+#  instance:
+#    hostname: localhost
+    
+spring:
+  cloud:
+    gateway:
+      routes: 
+      - id: Department-Service
+        uri: lb://Department-Service
+        predicates:
+          - Path=/dept/**
+        filters:
+          - name: CiruitBreaker
+            args:
+              name: Department-Service
+              fallbackuri: forword:/departmentservicefallback
+      - id: User-Service
+        uri: lb://User-Service
+        predicates:
+          - Path=/user/**  
+        filters:
+          - name: CiruitBreaker
+            args:
+              name: User-Service
+              fallbackuri: forword:/userservicefallback
+   
+
+
+#hystrix:
+#  command:
+#    fallbackcmd:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds:4000
+##
+#management:
+#  endpoint:
+#    web:
+#      exposure:
+#        include: hystrix.stream
